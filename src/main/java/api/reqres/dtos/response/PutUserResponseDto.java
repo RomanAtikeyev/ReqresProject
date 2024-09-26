@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PutPatchUserResponseDto {
+public class PutUserResponseDto {
     private String name;
     private String job;
     private String updatedAt;

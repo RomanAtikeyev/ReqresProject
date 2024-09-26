@@ -1,4 +1,4 @@
-package api.config;
+package api.handler;
 
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;

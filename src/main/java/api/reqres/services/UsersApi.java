@@ -1,10 +1,12 @@
 package api.reqres.services;
 
 import api.ApiHelper;
-import api.reqres.dtos.request.PutPatchUserRequestDto;
+import api.reqres.dtos.request.PatchUserRequestDto;
+import api.reqres.dtos.request.PutUserRequestDto;
 import api.reqres.dtos.response.GetUserResponseDto;
 import api.reqres.dtos.response.GetUsersResponseDto;
-import api.reqres.dtos.response.PutPatchUserResponseDto;
+import api.reqres.dtos.response.PatchUserResponseDto;
+import api.reqres.dtos.response.PutUserResponseDto;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
@@ -20,12 +22,12 @@ public class UsersApi extends ReqresBaseApi {
         return ApiHelper.get(USERS_URI + "/" + id, GetUserResponseDto.class);
     }
 
-    public static ResponseEntity<PutPatchUserResponseDto> patchUser(PutPatchUserRequestDto registerRequestDto, int id) {
-        return ApiHelper.patch(USERS_URI + "/" + id, registerRequestDto, PutPatchUserResponseDto.class);
+    public static ResponseEntity<PatchUserResponseDto> patchUser(PatchUserRequestDto registerRequestDto, int id) {
+        return ApiHelper.patch(USERS_URI + "/" + id, registerRequestDto, PatchUserResponseDto.class);
     }
 
-    public static ResponseEntity<PutPatchUserResponseDto> putUser(PutPatchUserRequestDto registerRequestDto, int id) {
-        return ApiHelper.put(USERS_URI + "/" + id, registerRequestDto, PutPatchUserResponseDto.class);
+    public static ResponseEntity<PutUserResponseDto> putUser(PutUserRequestDto registerRequestDto, int id) {
+        return ApiHelper.put(USERS_URI + "/" + id, registerRequestDto, PutUserResponseDto.class);
     }
 
     public static ResponseEntity<String> deleteUser(int id) {

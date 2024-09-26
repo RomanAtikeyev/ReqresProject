@@ -10,6 +10,7 @@ import utils.RandomValuesUtils;
 
 import java.util.Objects;
 
+import static io.qameta.allure.Allure.step;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -23,16 +24,20 @@ public class GetResourcesNegativeTests {
     }
 
     @Test
-    @DisplayName("Проверка вызова метода GET /unknown/<resourceId> для несуществующего ресурса")
+    @DisplayName("Проверка получения несуществующего ресурса через GET /unknown/<resourceId>")
     public void checkGetResourceWithNotExistedResourceId() {
-        var response = ResourcesApi.getResourceById(notExistedResourceId);
+        var response = step("Вызов метода GET /unknown/<resourceId>", () ->
+                ResourcesApi.getResourceById(notExistedResourceId)
+        );
 
         AssertApiSteps.checkStatusCodeIs404(response);
 
         var responseBody = Objects.requireNonNull(response.getBody());
-        assertAll(
-                () -> assertNull(responseBody.getData(), "Тело запроса не равно null"),
-                () -> assertNull(responseBody.getSupport(), "Поле support не равно null")
+        step("Проверка маппинга полей в теле ответа", () ->
+                assertAll(
+                        () -> assertNull(responseBody.getData(), "Тело запроса не равно null"),
+                        () -> assertNull(responseBody.getSupport(), "Поле support не равно null")
+                )
         );
     }
 }

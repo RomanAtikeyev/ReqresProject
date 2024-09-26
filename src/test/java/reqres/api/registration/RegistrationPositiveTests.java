@@ -4,16 +4,19 @@ import api.reqres.dtos.basic.UserDto;
 import api.reqres.dtos.request.RegisterRequestDto;
 import api.reqres.services.RegisterApi;
 import org.junit.jupiter.api.BeforeAll;
-
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.springframework.http.HttpStatus;
+import steps.AssertApiSteps;
 import steps.UserApiSteps;
 import utils.RandomValuesUtils;
 
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static io.qameta.allure.Allure.step;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RegistrationPositiveTests {
@@ -27,21 +30,25 @@ public class RegistrationPositiveTests {
     }
 
     @Test
+    @DisplayName("Регистрация пользователя через POST /register с валидными данными")
     public void registerExistedUser() {
-        var response = RegisterApi.register(RegisterRequestDto.builder()
-                .email(existedUser.getEmail())
-                .password(randomPassword)
-                .build());
+        var response = step("Вызов метода POST /register", () ->
+                RegisterApi.register(RegisterRequestDto.builder()
+                        .email(existedUser.getEmail())
+                        .password(randomPassword)
+                        .build())
+        );
 
-        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value(),
-                "Статус код ответа не соответствует ожидаемому");
+        AssertApiSteps.checkStatusCodeIs200(response);
 
         var responseBody = Objects.requireNonNull(response.getBody());
-        assertAll(
-                () -> assertEquals(existedUser.getId(), responseBody.getId(),
-                        "Id тела ответа не соответствует ожидаемому"),
-                () -> assertNotNull(responseBody.getToken(),
-                        "Токен из тела ответа равен null")
+        step("Проверка маппинга полей в теле ответа", () ->
+                assertAll(
+                        () -> assertEquals(existedUser.getId(), responseBody.getId(),
+                                "Id тела ответа не соответствует ожидаемому"),
+                        () -> assertNotNull(responseBody.getToken(),
+                                "Токен из тела ответа равен null")
+                )
         );
     }
 }

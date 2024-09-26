@@ -3,18 +3,21 @@ package reqres.api.registration;
 import api.reqres.dtos.request.RegisterRequestDto;
 import api.reqres.services.RegisterApi;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.http.HttpStatus;
+import steps.AssertApiSteps;
 import steps.UserApiSteps;
 import utils.RandomValuesUtils;
 
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static io.qameta.allure.Allure.step;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -43,18 +46,22 @@ public class RegistrationNegativeTests {
     }
 
     @ParameterizedTest(name = "{0}")
-    @DisplayName("Регистрация пользователя с невалидными данными: ")
+    @DisplayName("Регистрация пользователя через POST /register с невалидными данными: ")
     @MethodSource("invalidData")
     public void registerNotExistedUser(String caseName, String email, String password, String errorMessage) {
-        var response = RegisterApi.register(RegisterRequestDto.builder()
-                .email(email)
-                .password(password)
-                .build());
+        var response = step("Вызов метода POST /register", () ->
+                RegisterApi.register(RegisterRequestDto.builder()
+                        .email(email)
+                        .password(password)
+                        .build())
+        );
 
+        AssertApiSteps.checkStatusCodeIs400(response);
         var responseBody = Objects.requireNonNull(response.getBody());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value(),
-                "Статус код ответа не соответствует ожидаемому");
-        assertEquals(errorMessage, responseBody.getError(),
-                "Сообщение об ошибке не соответствует ожидаемому");
+
+        step("Проверка сообщения об ошибке", () ->
+                assertEquals(errorMessage, responseBody.getError(),
+                        "Сообщение об ошибке не соответствует ожидаемому")
+        );
     }
 }

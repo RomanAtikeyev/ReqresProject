@@ -1,6 +1,6 @@
 package api;
 
-import api.config.ErrorHandler;
+import api.handler.ErrorHandler;
 import lombok.experimental.UtilityClass;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

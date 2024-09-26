@@ -10,10 +10,11 @@ import utils.RandomValuesUtils;
 
 import java.util.Objects;
 
+import static io.qameta.allure.Allure.step;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class GetUsersNegativeTests {
+public class GetUserNegativeTests {
     private int notExistedUserId;
 
     @BeforeAll
@@ -22,16 +23,20 @@ public class GetUsersNegativeTests {
     }
 
     @Test
-    @DisplayName("Проверка вызова метода GET /users?id=<userId> для несуществующего пользователя")
+    @DisplayName("Проверка получения несуществующего пользователя через GET /users/<userId>")
     public void checkGetUserWithNotExistedUserId() {
-        var response = UsersApi.getUserById(notExistedUserId);
+        var response = step("Вызов метода GET /users/<userId>", () ->
+                UsersApi.getUserById(notExistedUserId)
+        );
 
         AssertApiSteps.checkStatusCodeIs404(response);
 
         var responseBody = Objects.requireNonNull(response.getBody());
-        assertAll(
-                () -> assertNull(responseBody.getData(), "Тело запроса не равно null"),
-                () -> assertNull(responseBody.getSupport(), "Поле support не равно null")
+        step("Проверка отсутствия тела ответа", () ->
+                assertAll(
+                        () -> assertNull(responseBody.getData(), "Тело запроса не равно null"),
+                        () -> assertNull(responseBody.getSupport(), "Поле support не равно null")
+                )
         );
     }
 }

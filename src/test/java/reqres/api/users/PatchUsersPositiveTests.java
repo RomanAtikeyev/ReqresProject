@@ -1,7 +1,7 @@
 package reqres.api.users;
 
 import api.reqres.dtos.basic.UserDto;
-import api.reqres.dtos.request.PutPatchUserRequestDto;
+import api.reqres.dtos.request.PatchUserRequestDto;
 import api.reqres.services.UsersApi;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +13,7 @@ import utils.RandomValuesUtils;
 
 import java.util.Objects;
 
+import static io.qameta.allure.Allure.step;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -20,11 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PatchUsersPositiveTests {
     private UserDto existedUser;
-    private PutPatchUserRequestDto patchUserRequestDto;
+    private PatchUserRequestDto patchUserRequestDto;
 
     @BeforeAll
     void prepareData() {
-        patchUserRequestDto = PutPatchUserRequestDto.builder()
+        patchUserRequestDto = PatchUserRequestDto.builder()
                 .name(RandomValuesUtils.getRandomAlphanumericString(10))
                 .job(RandomValuesUtils.getRandomAlphanumericString(10))
                 .build();
@@ -32,19 +33,23 @@ public class PatchUsersPositiveTests {
     }
 
     @Test
-    @DisplayName("Проверка вызова метода PATCH /users/<userId>")
+    @DisplayName("Проверка обновления полей пользователя через PATCH /users/<userId>")
     public void checkPatchUser() {
-        var response = UsersApi.patchUser(patchUserRequestDto, existedUser.getId());
+        var response = step("Вызов метода PATCH /users/<userId>", () ->
+                UsersApi.patchUser(patchUserRequestDto, existedUser.getId())
+        );
 
         AssertApiSteps.checkStatusCodeIs200(response);
 
         var responseBody = Objects.requireNonNull(response.getBody());
-        assertAll(
-                () -> assertEquals(patchUserRequestDto.getName(), responseBody.getName(),
-                        "Поле name не соответствует ожидаемому"),
-                () -> assertEquals(patchUserRequestDto.getJob(), responseBody.getJob(),
-                        "Поле job не соответствует ожидаемому"),
-                () -> assertNotNull(responseBody.getUpdatedAt(), "Поле updatedAt равно null")
+        step("Проверка маппинга полей в теле ответа", () ->
+                assertAll(
+                        () -> assertEquals(patchUserRequestDto.getName(), responseBody.getName(),
+                                "Поле name не соответствует ожидаемому"),
+                        () -> assertEquals(patchUserRequestDto.getJob(), responseBody.getJob(),
+                                "Поле job не соответствует ожидаемому"),
+                        () -> assertNotNull(responseBody.getUpdatedAt(), "Поле updatedAt равно null")
+                )
         );
     }
 }

@@ -1,5 +1,6 @@
 package steps;
 
+import io.qameta.allure.Step;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -18,6 +19,7 @@ public class AssertApiSteps {
         checkStatusCode(response, HttpStatus.NOT_FOUND);
     }
 
+    @Step("Проверка полученного статус кода ответа")
     public static <T> void checkStatusCode(ResponseEntity<T> response, HttpStatus expectedStatus) {
         assertEquals(expectedStatus.value(), response.getStatusCode().value(),
                 "Статус код ответа не соответствует ожидаемому");

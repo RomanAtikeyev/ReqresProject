@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @Builder
-public class PutPatchUserRequestDto {
+public class PutUserRequestDto {
     private String name;
     private String job;
 }
